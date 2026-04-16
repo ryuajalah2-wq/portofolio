@@ -1,65 +1,215 @@
-import Image from "next/image";
+"use client";
+
+import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useState } from "react";
+
+type Project = {
+  id: string;
+  name: string;
+  url: string | null;
+  status: string;
+  repo: string | null;
+};
+
+const experiences = [
+  {
+    title: "Frontend Freelancer",
+    period: "2024 - Present",
+    description: "Building polished landing pages and custom dashboards with fast and maintainable UI architecture.",
+  },
+  {
+    title: "Full-stack Project Builder",
+    period: "2023 - Present",
+    description: "Developing and deploying end-to-end web applications with strong focus on performance and clean structure.",
+  },
+];
+
+const testimonials = [
+  {
+    quote:
+      "Ryuu delivers clean interfaces with strong attention to detail. The final result always feels premium and smooth.",
+    author: "Testimonial 1",
+  },
+  {
+    quote:
+      "Great communication and very fast iteration cycle. Every revision improved both UX and visual consistency.",
+    author: "Testimonial 2",
+  },
+];
 
 export default function Home() {
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [activeTestimonial, setActiveTestimonial] = useState(0);
+
+  useEffect(() => {
+    const run = async () => {
+      try {
+        const response = await fetch("/api/projects");
+        const data = (await response.json()) as {
+          projects?: Project[];
+          error?: string;
+        };
+
+        if (!response.ok) {
+          setError(data.error ?? "Failed to load projects.");
+          return;
+        }
+
+        setProjects(data.projects ?? []);
+      } catch {
+        setError("Unexpected error while loading projects.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    run();
+  }, []);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setActiveTestimonial((prev) => (prev + 1) % testimonials.length);
+    }, 3200);
+    return () => window.clearInterval(interval);
+  }, []);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+    <div className="space-y-20 py-12">
+      <section id="home" className="space-y-8 scroll-mt-24">
+        <p className="inline-flex rounded-full border border-red-500/50 bg-red-950/30 px-4 py-1 text-sm text-red-300">
+          Itachi inspired portfolio
+        </p>
+        <div className="grid items-center gap-6 lg:grid-cols-2">
+          <div className="space-y-6">
+            <h1 className="text-5xl font-black uppercase tracking-[0.15em] text-zinc-100 sm:text-7xl">
+              ryuu
+            </h1>
+            <p className="max-w-2xl text-lg leading-relaxed text-zinc-300">
+              Frontend-focused developer who builds clean web experiences with bold visuals, smooth motion, and solid performance.
+            </p>
+          </div>
+          <div className="overflow-hidden rounded-2xl border border-red-900/60 bg-black/60 shadow-[0_0_40px_rgba(185,28,28,0.25)]">
+            <iframe
+              title="Ryuu featured video"
+              src="https://www.youtube-nocookie.com/embed/B7aFTOlA1Fo?autoplay=1&mute=1&loop=1&playlist=B7aFTOlA1Fo&controls=0&modestbranding=1&rel=0&disablekb=1"
+              className="pointer-events-none aspect-video w-full"
+              allow="autoplay; encrypted-media; picture-in-picture"
+              referrerPolicy="strict-origin-when-cross-origin"
+              tabIndex={-1}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          </div>
         </div>
-      </main>
+      </section>
+
+      <section id="about" className="space-y-6 scroll-mt-24">
+        <h2 className="text-3xl font-bold text-red-400">About Me</h2>
+        <div className="grid items-center gap-6 lg:grid-cols-2">
+          <p className="max-w-4xl text-zinc-300">
+            Perkenalkan, saya Ryuu, seorang Full-stack Web Developer yang berfokus pada pengembangan antarmuka modern dengan performa tinggi. Saya memiliki spesialisasi dalam membangun aplikasi web yang tidak hanya responsif secara visual, tetapi juga memberikan pengalaman pengguna yang intuitif dan cepat. Saya sangat memperhatikan detail pada tata letak dan optimasi kode untuk memastikan setiap proyek memiliki identitas visual yang kuat dan fungsionalitas yang stabil.
+          </p>
+          <div className="overflow-hidden rounded-2xl border border-red-900/60 bg-black/60 shadow-[0_0_40px_rgba(185,28,28,0.2)]">
+            <iframe
+              title="About section featured video"
+              src="https://www.youtube-nocookie.com/embed/IcBF7rZ1yis?autoplay=1&mute=1&loop=1&playlist=IcBF7rZ1yis&controls=0&modestbranding=1&rel=0&disablekb=1"
+              className="pointer-events-none aspect-video w-full"
+              allow="autoplay; encrypted-media; picture-in-picture"
+              referrerPolicy="strict-origin-when-cross-origin"
+              tabIndex={-1}
+            />
+          </div>
+        </div>
+      </section>
+
+      <section id="experience" className="space-y-6 scroll-mt-24">
+        <h2 className="text-3xl font-bold text-red-400">Experience</h2>
+        <div className="grid gap-4 md:grid-cols-2">
+          {experiences.map((experience) => (
+            <article
+              key={experience.title}
+              className="rounded-2xl border border-zinc-800 bg-zinc-950/80 p-5"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <h3 className="text-xl font-semibold text-zinc-100">{experience.title}</h3>
+                <p className="text-sm text-red-300">{experience.period}</p>
+              </div>
+              <p className="mt-2 text-zinc-300">{experience.description}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section id="projects" className="space-y-6 scroll-mt-24">
+        <h2 className="text-3xl font-bold text-red-400">Projects</h2>
+        {loading && (
+          <p className="rounded-xl border border-zinc-700 bg-zinc-950/70 p-4 text-zinc-300">
+            Loading your deployed projects from Vercel...
+          </p>
+        )}
+        {error && (
+          <p className="rounded-xl border border-red-700/70 bg-red-950/30 p-4 text-red-200">
+            {error}
+          </p>
+        )}
+        {!loading && !error && projects.length === 0 && (
+          <p className="rounded-xl border border-zinc-700 bg-zinc-950/70 p-4 text-zinc-300">
+            Belum ada project yang sudah deploy (READY) di Vercel.
+          </p>
+        )}
+        <div className="grid gap-4 sm:grid-cols-2">
+          {projects.map((project) => (
+            <article
+              key={project.id}
+              className="rounded-2xl border border-zinc-800 bg-zinc-950/80 p-6"
+            >
+              <h3 className="text-xl font-semibold text-zinc-100">{project.name}</h3>
+              <p className="mt-2 text-sm text-zinc-400">Status: {project.status}</p>
+              {project.url && (
+                <a
+                  href={project.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 inline-flex rounded-full border border-red-500/80 px-4 py-1 text-sm text-red-300 transition hover:bg-red-950/50"
+                >
+                  Open deployment
+                </a>
+              )}
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section id="contact" className="space-y-6 scroll-mt-24">
+        <h2 className="text-3xl font-bold text-red-400">Contact</h2>
+        <p className="text-zinc-300">
+          Email:{" "}
+          <a className="text-red-300 underline decoration-red-700" href="mailto:ryuajalah2@gmail.com">
+            ryuajalah2@gmail.com
+          </a>
+        </p>
+      </section>
+
+      <section id="testimonials" className="space-y-6 pb-8 scroll-mt-24">
+        <h2 className="text-3xl font-bold text-red-400">Testimonials</h2>
+        <div className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/80 p-6">
+          <AnimatePresence mode="wait">
+            <motion.blockquote
+              key={activeTestimonial}
+              initial={{ opacity: 0, x: 22 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -22 }}
+              transition={{ duration: 0.35 }}
+              className="space-y-3"
+            >
+              <p className="text-lg text-zinc-200">
+                &ldquo;{testimonials[activeTestimonial].quote}&rdquo;
+              </p>
+              <footer className="text-sm text-red-300">{testimonials[activeTestimonial].author}</footer>
+            </motion.blockquote>
+          </AnimatePresence>
+        </div>
+      </section>
     </div>
   );
 }
