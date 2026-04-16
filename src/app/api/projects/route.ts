@@ -8,12 +8,21 @@ type VercelProject = {
 };
 
 export async function GET() {
-  const token = process.env.VERCEL_TOKEN;
+  const tokenCandidates = [
+    process.env.VERCEL_TOKEN,
+    process.env.VERCEL_ACCESS_TOKEN,
+    process.env.TOKEN_VERCEL,
+    process.env.VERCEL__TOKEN,
+  ];
+  const token = tokenCandidates.find((item) => Boolean(item));
   const apiBase = process.env.VERCEL_API_BASE_URL ?? "https://api.vercel.com";
 
   if (!token) {
     return NextResponse.json(
-      { error: "Missing VERCEL_TOKEN. Add it in your environment variables." },
+      {
+        error:
+          "Missing Vercel token. Please set one of: VERCEL_TOKEN, VERCEL_ACCESS_TOKEN, TOKEN_VERCEL, or VERCEL__TOKEN.",
+      },
       { status: 500 },
     );
   }
